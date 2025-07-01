@@ -1,0 +1,6 @@
+/target
+
+yamls
+config.yml
+textures
+*.o2r

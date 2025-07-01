@@ -1,0 +1,10 @@
+[package]
+name = "convert-texture-o2r"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+image = "0.25.6"
+walkdir = "2.5.0"
+yaml-rust2 = "0.10.3"
+zip = "4.2.0"
