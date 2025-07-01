@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Temporarily modify the rust toolchain version
-        run: rustup override set nightly
+        run: rustup update nightly && rustup default nightly
       - name: Compile and release
         uses: rust-build/rust-build.action@v1.4.5
         env:
