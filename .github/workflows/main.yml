@@ -21,9 +21,12 @@ jobs:
       - name: Temporarily modify the rust toolchain version
         run: rustup update nightly && rustup default nightly
       - name: Compile and release
-        uses: rust-build/rust-build.action@v1.4.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+          mkdir -p target/${{ matrix.target }}/release
+          cp target/${{ matrix.target }}/release/convert-texture-o2r target/${{ matrix.target }}/release/convert-texture-o2r-${{ matrix.target }}
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
         with:
-          RUSTTARGET: ${{ matrix.target }}
-          ARCHIVE_TYPES: ${{ matrix.archive }}
+          name: convert-texture-o2r-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/convert-texture-o2r-${{ matrix.target }}
