@@ -521,18 +521,4 @@ fn main() {
         )
         .unwrap();
     }
-
-    println!("{} textures with TLUT found", texture_palette.len());
-
-    let path = "boo_frames/gTextureBoo01";
-
-    let mut a_file = zip.by_name(path).expect("Failed to find file in zip");
-
-    println!("File found: {}", a_file.name());
-
-    let mut data = Vec::new();
-    a_file
-        .read_to_end(&mut data)
-        .expect("Failed to read file data");
-    convert_texture(data);
 }
