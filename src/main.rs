@@ -63,8 +63,8 @@ impl TextureType {
             TextureType::RGBA16bpp => image::ExtendedColorType::Rgba8,
             TextureType::Palette4bpp => image::ExtendedColorType::Rgba8,
             TextureType::Palette8bpp => image::ExtendedColorType::Rgba8,
-            TextureType::Grayscale4bpp => image::ExtendedColorType::L8,
-            TextureType::Grayscale8bpp => image::ExtendedColorType::L8,
+            TextureType::Grayscale4bpp => image::ExtendedColorType::La8,
+            TextureType::Grayscale8bpp => image::ExtendedColorType::La8,
             TextureType::GrayscaleAlpha4bpp => image::ExtendedColorType::La8,
             TextureType::GrayscaleAlpha8bpp => image::ExtendedColorType::La8,
             TextureType::GrayscaleAlpha16bpp => image::ExtendedColorType::La8,
@@ -458,11 +458,23 @@ fn main() {
                         bits >>= 4;
                     }
                     new_data.push(scale_4_8(bits));
+                    new_data.push(scale_4_8(bits));
                 }
                 data = new_data;
             }
             TextureType::Grayscale8bpp => {
                 println!("Converting Grayscale8bpp texture");
+                let mut new_data = Vec::with_capacity(
+                    (texture_format.height * texture_format.width * 2)
+                        .try_into()
+                        .unwrap(),
+                );
+                for i in 0..(texture_format.height * texture_format.width) as usize {
+                    let bits = data[i];
+                    new_data.push(bits); // Grayscale
+                    new_data.push(bits); // Alpha
+                }
+                data = new_data;
             }
             TextureType::GrayscaleAlpha4bpp => {
                 println!("Converting GrayscaleAlpha4bpp texture");
@@ -493,7 +505,7 @@ fn main() {
                 for i in 0..(texture_format.height * texture_format.width) as usize {
                     let bits = data[i];
                     new_data.push(scale_4_8((bits & 0xF0) >> 4)); // Grayscale
-                    new_data.push(bits & 0x0F); // Alpha
+                    new_data.push(scale_4_8(bits & 0x0F)); // Alpha
                 }
                 data = new_data;
             }
