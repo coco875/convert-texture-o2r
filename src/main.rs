@@ -324,7 +324,7 @@ fn main() {
         texture_palette.insert(file.name().to_owned(), TextureFormat::parse(&data));
     }
 
-    let folder_name = "textures";
+    let folder_name = "assets";
     fs::remove_dir_all(folder_name).ok();
     fs::create_dir_all(folder_name).expect("Failed to create folder");
 
@@ -353,14 +353,12 @@ fn main() {
             continue;
         }
 
-        let current_folder_name = name.split('/').next().unwrap();
-
         let path = folder_name.to_owned() + "/" + &name + ".png";
         let file_name = name.split('/').last().unwrap();
 
         println!("Processing texture: {}", path);
 
-        let _ = fs::create_dir(folder_name.to_owned() + "/" + current_folder_name);
+        let _ = fs::create_dir_all(std::path::Path::new(&path).parent().unwrap());
 
         let format = texture_format.type_id.to_image_type();
         let mut data = texture_format.data;
