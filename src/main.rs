@@ -398,6 +398,39 @@ fn main() {
             }
             TextureType::Palette4bpp => {
                 println!("Converting Palette4bpp texture");
+                let mut new_data = Vec::with_capacity(
+                    (texture_format.height * texture_format.width * 4)
+                        .try_into()
+                        .unwrap(),
+                );
+                if !texture_tlut.contains_key(file_name) {
+                    println!("Texture TLUT not found for {}", file_name);
+                    continue;
+                }
+                let tlut = texture_tlut.get(file_name).unwrap();
+                let Some(tlut) = texture_palette
+                        .iter().find(|(name, _)| name.contains(tlut)) else {
+                    println!("Texture TLUT not found for {}", file_name);
+                    continue;
+                };
+                for i in 0..(texture_format.height * texture_format.width) as usize {
+                    let index = data[i / 2] >> if i % 2 == 0 { 4 } else { 0 } & 0x0F;
+                    let color = tlut
+                        .1
+                        .data
+                        .chunks(2)
+                        .nth(index as usize)
+                        .unwrap_or(&[1, 1]);
+                    let r = scale_5_8((color[0] & 0xF8) >> 3);
+                    let g = scale_5_8(((color[0] & 0x07) << 2) | ((color[1] & 0xc0) >> 6));
+                    let b = scale_5_8((color[1] & 0x3E) >> 1);
+                    let a = if (color[1] & 0x01) != 0 { 0xFF } else { 0x00 };
+                    new_data.push(r); // R
+                    new_data.push(g); // G
+                    new_data.push(b); // B
+                    new_data.push(a); // A
+                }
+                data = new_data;
             }
             TextureType::Palette8bpp => {
                 println!("Converting Palette8bpp texture");
